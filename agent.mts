@@ -8,7 +8,7 @@ const tavily = new TavilySearchResults({
   maxResults: 3,
   apiKey: process.env.TAVILY_API_KEY,
 });
-const ollama = new Ollama({ model: "llama3.2", temperature: 0.8 });
+const ollama = new Ollama({ model: "llama3.1", temperature: 0.8 });
 
 const chain = RunnableSequence.from([
   // Step 1: Prepare search request
