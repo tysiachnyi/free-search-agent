@@ -10,6 +10,25 @@ const tavily = new TavilySearchResults({
 });
 const ollama = new Ollama({ model: "llama3.1", temperature: 0.8 });
 
+const answerOrSearch = async (userInput: string) => {
+  const directAnswer = await ollama.invoke(
+    `You are an expert assistant. If you know the answer to the user's question, provide a direct and complete answer. 
+    If you do not know the answer or cannot answer confidently, reply with only the word SEARCH.
+
+    User question: ${userInput}
+    `
+  );
+  if (directAnswer && !/SEARCH/i.test(directAnswer)) {
+    console.log("Direct answer from model:");
+    console.log(directAnswer);
+    return;
+  }
+
+  const result = await chain.invoke(userInput);
+  console.log("Answer with search:");
+  console.log(result);
+};
+
 const chain = RunnableSequence.from([
   // Step 1: Prepare search request
   async (query: string) => {
@@ -54,8 +73,6 @@ const rl = readline.createInterface({
 });
 
 rl.question("Ask me anything: ", async (userInput) => {
-  const result = await chain.invoke(userInput);
-  console.log(result);
-
+  await answerOrSearch(userInput);
   rl.close();
 });
